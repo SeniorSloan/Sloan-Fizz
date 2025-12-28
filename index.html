@@ -80,29 +80,20 @@
     <!-- Color Picker Modal -->
     <div id="color-picker-modal" class="color-picker-modal">
         <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 max-w-sm mx-4 text-center">
-            <h2 class="text-2xl font-bold text-white mb-2">Pick Your Heart Color</h2>
-            <p class="text-white/60 mb-6">Choose a color so your partner knows which votes are yours!</p>
-            <div class="flex flex-wrap justify-center gap-4 mb-6">
-                <button onclick="selectColor('#ec4899')" class="color-option" style="background: #ec4899;">
-                    <span>💗</span>
-                </button>
-                <button onclick="selectColor('#f43f5e')" class="color-option" style="background: #f43f5e;">
-                    <span>❤️</span>
-                </button>
-                <button onclick="selectColor('#8b5cf6')" class="color-option" style="background: #8b5cf6;">
-                    <span>💜</span>
-                </button>
-                <button onclick="selectColor('#3b82f6')" class="color-option" style="background: #3b82f6;">
+            <h2 class="text-2xl font-bold text-white mb-2">Who Are You?</h2>
+            <p class="text-white/60 mb-6">Pick your heart!</p>
+            <div class="flex justify-center gap-8 mb-6">
+                <button onclick="selectColor('#3b82f6', 'Sloan')" class="color-option flex flex-col items-center gap-2" style="background: #3b82f6; width: 80px; height: 80px;">
                     <span>💙</span>
                 </button>
-                <button onclick="selectColor('#22c55e')" class="color-option" style="background: #22c55e;">
-                    <span>💚</span>
-                </button>
-                <button onclick="selectColor('#f59e0b')" class="color-option" style="background: #f59e0b;">
-                    <span>🧡</span>
+                <button onclick="selectColor('#ec4899', 'Fizz')" class="color-option flex flex-col items-center gap-2" style="background: #ec4899; width: 80px; height: 80px;">
+                    <span>💗</span>
                 </button>
             </div>
-            <p class="text-white/40 text-sm">Your votes will show as a colored heart</p>
+            <div class="flex justify-center gap-8">
+                <span class="text-white font-semibold" style="width: 80px;">Sloan</span>
+                <span class="text-white font-semibold" style="width: 80px;">Fizz</span>
+            </div>
         </div>
     </div>
 
@@ -339,19 +330,27 @@
         const socket = io();
         let mySocketId = null;
         let myColor = null;
+        let myName = null;
         let allUsers = {};
+
+        // Color to name mapping
+        const colorNames = {
+            '#3b82f6': 'Sloan',
+            '#ec4899': 'Fizz'
+        };
 
         // Track expanded state
         const expanded = { friday: true, saturday: true };
 
         // Color selection
-        function selectColor(color) {
+        function selectColor(color, name) {
             myColor = color;
+            myName = name;
             document.getElementById('color-picker-modal').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
 
-            // Tell server our color
-            socket.emit('set-color', { color: color });
+            // Tell server our color and name
+            socket.emit('set-color', { color: color, name: name });
         }
 
         // Connection status handling
@@ -441,12 +440,21 @@
                     const isMatch = colors.length >= 2;
 
                     colors.forEach(color => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'flex flex-col items-center';
+
                         const heart = document.createElement('span');
                         heart.className = 'vote-heart-icon';
                         heart.style.backgroundColor = color;
                         heart.textContent = '♥';
-                        heart.title = color === myColor ? 'You' : 'Partner';
-                        indicators.appendChild(heart);
+
+                        const name = document.createElement('span');
+                        name.className = 'text-xs text-white/70 mt-1';
+                        name.textContent = colorNames[color] || '';
+
+                        wrapper.appendChild(heart);
+                        wrapper.appendChild(name);
+                        indicators.appendChild(wrapper);
                     });
 
                     // Mark as my vote if my color voted for this
