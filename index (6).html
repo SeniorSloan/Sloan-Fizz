@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekend with Fizz 💕</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .timeline-line {
+            background: linear-gradient(to bottom, #a855f7, #f59e0b, #f97316);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-4">
+                <span class="text-pink-400">💕</span>
+                <span class="text-white/90 font-medium">Weekend with Fizz</span>
+                <span class="text-pink-400">💕</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">Adventure Map</h1>
+            <p class="text-white/60">Tap options to vote on your picks!</p>
+        </div>
+
+        <!-- Timeline -->
+        <div class="relative">
+            <!-- Connecting Line -->
+            <div class="absolute left-6 top-0 bottom-0 w-1 timeline-line rounded-full"></div>
+
+            <!-- FRIDAY -->
+            <div class="mb-6">
+                <button onclick="toggleDay('friday')" class="relative z-10 w-full flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-xl">🌙</div>
+                    <span class="text-xl font-bold flex-1 text-left">Friday Night</span>
+                    <svg id="friday-chevron" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                </button>
+
+                <div id="friday-content" class="mt-4 ml-12 space-y-4">
+                    <div class="relative rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm">
+                        <div class="p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 rounded-lg bg-white/10">
+                                    <span class="text-xl">🍽️</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xs text-white/50 uppercase tracking-wider">Evening</span>
+                                    </div>
+                                    <h3 class="text-white font-semibold text-lg">Velvet Taco</h3>
+                                    <p class="text-white/60 text-sm mt-1">Gourmet tacos & good vibes to kick off the weekend</p>
+                                    <div class="mt-2 text-lg">🌮 🍹 ✨</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SATURDAY -->
+            <div class="mb-6">
+                <button onclick="toggleDay('saturday')" class="relative z-10 w-full flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-xl">☀️</div>
+                    <span class="text-xl font-bold flex-1 text-left">Saturday</span>
+                    <svg id="saturday-chevron" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                </button>
+
+                <div id="saturday-content" class="mt-4 ml-12 space-y-4">
+                    <!-- Gym -->
+                    <div class="relative rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm">
+                        <div class="p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 rounded-lg bg-white/10">
+                                    <span class="text-xl">🏋️</span>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-xs text-white/50 uppercase tracking-wider">Morning</span>
+                                    <h3 class="text-white font-semibold text-lg">Gym Time</h3>
+                                    <p class="text-white/60 text-sm mt-1">Start the day strong</p>
+                                    <div class="mt-2 text-lg">💪 🔥</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lunch Options -->
+                    <div class="relative rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm">
+                        <div class="p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 rounded-lg bg-white/10">
+                                    <span class="text-xl">🍽️</span>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-xs text-white/50 uppercase tracking-wider">Lunch</span>
+                                    <h3 class="text-white font-semibold text-lg">Pick Your Spot</h3>
+                                    <p class="text-white/60 text-sm mt-1">Vote for your favorite!</p>
+                                    <div class="mt-3 space-y-2">
+                                        <button onclick="vote(this, 'lunch')" class="vote-btn lunch w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                                            <span class="text-2xl">🍜</span>
+                                            <div class="flex-1 text-left">
+                                                <div class="text-white font-medium">Lua Viet</div>
+                                                <div class="text-white/50 text-xs">Vietnamese comfort food</div>
+                                            </div>
+                                            <div class="vote-heart hidden w-6 h-6 bg-pink-500 rounded-full items-center justify-center">💕</div>
+                                        </button>
+                                        <button onclick="vote(this, 'lunch')" class="vote-btn lunch w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                                            <span class="text-2xl">🥪</span>
+                                            <div class="flex-1 text-left">
+                                                <div class="text-white font-medium">Brown Bag Deli</div>
+                                                <div class="text-white/50 text-xs">Classic deli goodness</div>
+                                            </div>
+                                            <div class="vote-heart hidden w-6 h-6 bg-pink-500 rounded-full items-center justify-center">💕</div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shopping -->
+                    <div class="relative rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm">
+                        <div class="p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 rounded-lg bg-white/10">
+                                    <span class="text-xl">🛍️</span>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-xs text-white/50 uppercase tracking-wider">Afternoon</span>
+                                    <h3 class="text-white font-semibold text-lg">Mall Shopping</h3>
+                                    <p class="text-white/60 text-sm mt-1">Mission: Shoes & Christmas presents</p>
+                                    <div class="mt-2 text-lg">👟 🎁 🛍️</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dinner Options -->
+                    <div class="relative rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm">
+                        <div class="p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 rounded-lg bg-white/10">
+                                    <span class="text-xl">🍽️</span>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="text-xs text-white/50 uppercase tracking-wider">Dinner</span>
+                                    <h3 class="text-white font-semibold text-lg">Dinner Decision</h3>
+                                    <p class="text-white/60 text-sm mt-1">Three great options - pick your mood!</p>
+                                    <div class="mt-3 space-y-2">
+                                        <button onclick="vote(this, 'dinner')" class="vote-btn dinner w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                                            <span class="text-2xl">🍖</span>
+                                            <div class="flex-1 text-left">
+                                                <div class="text-white font-medium">Gorosu</div>
+                                                <div class="text-white/50 text-xs">Korean BBQ vibes</div>
+                                            </div>
+                                            <div class="vote-heart hidden w-6 h-6 bg-pink-500 rounded-full items-center justify-center">💕</div>
+                                        </button>
+                                        <button onclick="vote(this, 'dinner')" class="vote-btn dinner w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                                            <span class="text-2xl">🍜</span>
+                                            <div class="flex-1 text-left">
+                                                <div class="text-white font-medium">Ramen</div>
+                                                <div class="text-white/50 text-xs">Cozy noodle bowl</div>
+                                            </div>
+                                            <div class="vote-heart hidden w-6 h-6 bg-pink-500 rounded-full items-center justify-center">💕</div>
+                                        </button>
+                                        <button onclick="vote(this, 'dinner')" class="vote-btn dinner w-full flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                                            <span class="text-2xl">🌯</span>
+                                            <div class="flex-1 text-left">
+                                                <div class="text-white font-medium">Mexican</div>
+                                                <div class="text-white/50 text-xs">Can't go wrong</div>
+                                            </div>
+                                            <div class="vote-heart hidden w-6 h-6 bg-pink-500 rounded-full items-center justify-center">💕</div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zoo Lights -->
+                    <div class="relative rounded-xl overflow-hidden bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border-2 border-emerald-400/50 backdrop-blur-sm">
+                        <div class="p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 rounded-lg bg-emerald-500/30">
+                                    <span class="text-xl">⭐</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xs text-white/50 uppercase tracking-wider">7:30 PM</span>
+                                        <span class="text-xs bg-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-full">Highlight!</span>
+                                    </div>
+                                    <h3 class="text-white font-semibold text-lg">Houston Zoo Lights</h3>
+                                    <p class="text-white/60 text-sm mt-1">The grand finale - millions of lights!</p>
+                                    <div class="mt-2 text-lg">🦁 ✨ 🎄</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center">
+            <div class="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-full px-6 py-3">
+                <span class="text-amber-400">✨</span>
+                <span class="text-white/70">Let's make some memories!</span>
+                <span class="text-amber-400">✨</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Track expanded state
+        const expanded = { friday: true, saturday: true };
+
+        function toggleDay(day) {
+            expanded[day] = !expanded[day];
+            const content = document.getElementById(`${day}-content`);
+            const chevron = document.getElementById(`${day}-chevron`);
+            
+            if (expanded[day]) {
+                content.style.display = 'block';
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.display = 'none';
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function vote(btn, group) {
+            // Toggle this button
+            const isSelected = btn.classList.contains('selected');
+            
+            // Remove selection from other buttons in same group
+            document.querySelectorAll(`.vote-btn.${group}`).forEach(b => {
+                b.classList.remove('selected', 'bg-gradient-to-r', 'from-pink-500/40', 'to-purple-500/40', 'border-pink-400/60', 'scale-[1.02]');
+                b.classList.add('bg-white/5', 'border-white/10');
+                b.querySelector('.vote-heart').classList.add('hidden');
+                b.querySelector('.vote-heart').classList.remove('flex');
+            });
+
+            // If wasn't selected, select it
+            if (!isSelected) {
+                btn.classList.add('selected', 'bg-gradient-to-r', 'from-pink-500/40', 'to-purple-500/40', 'border-pink-400/60', 'scale-[1.02]');
+                btn.classList.remove('bg-white/5', 'border-white/10');
+                btn.querySelector('.vote-heart').classList.remove('hidden');
+                btn.querySelector('.vote-heart').classList.add('flex');
+            }
+        }
+    </script>
+</body>
+</html>
