@@ -386,49 +386,56 @@
         }
 
         function updateAllVoteDisplays(votes) {
-            // Clear all vote indicators first
+            // Clear all vote indicators and local selection styling first
             document.querySelectorAll('.vote-btn').forEach(btn => {
                 const indicators = btn.querySelector('.vote-indicators');
                 if (indicators) indicators.innerHTML = '';
-                btn.classList.remove('match-glow');
+                btn.classList.remove('match-glow', 'my-vote', 'scale-[1.02]');
+                const heart = btn.querySelector('.vote-heart');
+                if (heart) {
+                    heart.classList.add('hidden');
+                    heart.classList.remove('flex');
+                }
             });
 
-            // Process each group
+            // Process each group - votes are now stored by COLOR
             Object.keys(votes).forEach(group => {
-                const groupVotes = votes[group];
-                const optionVoters = {};
+                const groupVotes = votes[group]; // { color: option }
+                const optionColors = {};
 
-                // Group voters by option
-                Object.entries(groupVotes).forEach(([visitorId, option]) => {
+                // Group colors by option
+                Object.entries(groupVotes).forEach(([color, option]) => {
                     if (!option) return;
-                    if (!optionVoters[option]) {
-                        optionVoters[option] = [];
+                    if (!optionColors[option]) {
+                        optionColors[option] = [];
                     }
-                    optionVoters[option].push(visitorId);
+                    optionColors[option].push(color);
                 });
 
                 // Update UI for each option that has votes
-                Object.entries(optionVoters).forEach(([option, voters]) => {
+                Object.entries(optionColors).forEach(([option, colors]) => {
                     const btn = document.querySelector(`.vote-btn.${group}[data-option="${option}"]`);
                     if (!btn) return;
 
                     const indicators = btn.querySelector('.vote-indicators');
                     if (!indicators) return;
 
-                    // Check if multiple people voted for this option
-                    const isMatch = voters.length >= 2;
+                    // Check if multiple colors voted for this option
+                    const isMatch = colors.length >= 2;
 
-                    voters.forEach(oderId => {
-                        const user = allUsers[oderId] || {};
-                        const userColor = user.color || '#888';
-
+                    colors.forEach(color => {
                         const heart = document.createElement('span');
                         heart.className = 'vote-heart-icon';
-                        heart.style.backgroundColor = userColor;
+                        heart.style.backgroundColor = color;
                         heart.textContent = '♥';
-                        heart.title = oderId === mySocketId ? 'You' : 'Partner';
+                        heart.title = color === myColor ? 'You' : 'Partner';
                         indicators.appendChild(heart);
                     });
+
+                    // Mark as my vote if my color voted for this
+                    if (myColor && colors.includes(myColor)) {
+                        btn.classList.add('my-vote', 'scale-[1.02]');
+                    }
 
                     // Add match glow if both picked the same
                     if (isMatch) {
@@ -461,28 +468,13 @@
             const option = btn.dataset.option;
             const isSelected = btn.classList.contains('my-vote');
 
-            // Toggle selection locally
-            document.querySelectorAll(`.vote-btn.${group}`).forEach(b => {
-                b.classList.remove('my-vote', 'scale-[1.02]');
-                const heart = b.querySelector('.vote-heart');
-                heart.classList.add('hidden');
-                heart.classList.remove('flex');
-            });
-
-            // If wasn't selected, select it and emit
+            // If wasn't selected, select it; otherwise deselect
             if (!isSelected) {
-                btn.classList.add('my-vote', 'scale-[1.02]');
-                const heart = btn.querySelector('.vote-heart');
-                heart.style.backgroundColor = myColor;
-                heart.classList.remove('hidden');
-                heart.classList.add('flex');
-
-                // Emit vote to server
                 socket.emit('vote', { group: group, option: option });
             } else {
-                // Deselecting - emit null option
                 socket.emit('vote', { group: group, option: null });
             }
+            // UI will update when server broadcasts vote-update
         }
     </script>
 </body>

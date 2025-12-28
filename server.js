@@ -10,13 +10,24 @@ const io = new Server(server);
 // Serve static files
 app.use(express.static(path.join(__dirname)));
 
-// Store current votes: { group: { oderId: option } }
+// Store current votes by color: { group: { color: option } }
 const votes = {};
 // Store user info: { oderId: { color: '#...' } }
 const users = {};
 
 function getUsersObject() {
     return users;
+}
+
+function getColorUsers() {
+    // Map colors to socket IDs for display
+    const colorMap = {};
+    Object.entries(users).forEach(([oderId, data]) => {
+        if (data.color) {
+            colorMap[data.color] = oderId;
+        }
+    });
+    return colorMap;
 }
 
 io.on('connection', (socket) => {
@@ -30,8 +41,17 @@ io.on('connection', (socket) => {
 
     // Handle color selection
     socket.on('set-color', (data) => {
-        users[socket.id] = { color: data.color };
-        console.log(`User ${socket.id} picked color: ${data.color}`);
+        const color = data.color;
+
+        // Remove any other user with this color (take over the color)
+        Object.keys(users).forEach(otherId => {
+            if (users[otherId].color === color && otherId !== socket.id) {
+                users[otherId].color = null;
+            }
+        });
+
+        users[socket.id] = { color: color };
+        console.log(`User ${socket.id} picked color: ${color}`);
 
         // Broadcast updated users to everyone
         io.emit('users-update', getUsersObject());
@@ -47,24 +67,27 @@ io.on('connection', (socket) => {
 
     // Handle vote events
     socket.on('vote', (data) => {
-        // Store the vote: votes[group][oderId] = option
+        const userColor = users[socket.id]?.color;
+        if (!userColor) return; // Must have a color to vote
+
+        // Store the vote by COLOR: votes[group][color] = option
         if (!votes[data.group]) {
             votes[data.group] = {};
         }
 
-        // Set this user's vote for this group
+        // Set this color's vote for this group
         if (data.option) {
-            votes[data.group][socket.id] = data.option;
+            votes[data.group][userColor] = data.option;
         } else {
             // Deselecting
-            delete votes[data.group][socket.id];
+            delete votes[data.group][userColor];
         }
 
         // Broadcast to all users including sender
         io.emit('vote-update', {
             group: data.group,
             option: data.option,
-            oderId: socket.id,
+            color: userColor,
             allVotes: votes,
             users: getUsersObject()
         });
@@ -73,17 +96,12 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
 
-        // Remove user's votes from all groups
-        Object.keys(votes).forEach(group => {
-            delete votes[group][socket.id];
-        });
-
-        // Remove user
+        // Don't remove votes - they persist by color!
+        // Just remove the user session
         delete users[socket.id];
 
         io.emit('user-count', Object.keys(users).length);
         io.emit('users-update', getUsersObject());
-        io.emit('sync-votes', votes);
     });
 });
 
